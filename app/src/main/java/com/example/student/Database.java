@@ -29,6 +29,37 @@ public class Database {
                 COL_ADDRESS + " TEXT)";
     }
 
+    public static class TodoTask implements BaseColumns {
+        public static final String TABLE_NAME = "todoTask";
+        public static final String COL_NAME = "name";
+        public static final String COL_LOCATION = "location";
+        public static final String COL_STATUS = "status";
+
+        public static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " +
+            TABLE_NAME + " (" +
+            _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            COL_NAME + " TEXT, " +
+            COL_LOCATION + " TEXT, " +
+            COL_STATUS + " TEXT)";
+    }
+
+    public static class Exam implements BaseColumns {
+        public static final String TABLE_NAME = "exam";
+        public static final String COL_NAME = "name";
+        public static final String COL_DATE_TIME = "dateAndTime";
+        public static final String COL_LOCATION = "location";
+        public static final String COL_STUDENT_ID = "student_id";
+
+        public static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " +
+                TABLE_NAME + " (" +
+                _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COL_STUDENT_ID + " INTEGER, " +
+                COL_NAME + " TEXT, " +
+                COL_DATE_TIME + " TEXT, " +
+                COL_LOCATION + " TEXT, " +
+                 "FOREIGN KEY(" + COL_STUDENT_ID + ") REFERENCES " +
+                Student.TABLE_NAME + "(" + Student._ID + ")" + " )";
+    }
 
 
 }

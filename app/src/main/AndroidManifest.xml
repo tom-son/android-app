@@ -17,7 +17,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".Student" />
-        <activity android:name=".studentListView"></activity>
+        <activity android:name=".studentListView" />
+        <activity android:name=".TodoTask" />
+        <activity android:name=".todoTask_list_view" />
+        <activity android:name=".Exam"></activity>
     </application>
 
 </manifest>

@@ -24,6 +24,7 @@
         android:layout_marginStart="28dp"
         android:layout_marginTop="16dp"
         android:text="To Do Task"
+        android:onClick="todoTaskHandler"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/studentButton" />
 
@@ -35,5 +36,5 @@
         android:layout_marginTop="16dp"
         android:text="Exam"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button2" />
+        app:layout_constraintTop_toBottomOf="@+id/todotaskButton" />
 </android.support.constraint.ConstraintLayout>

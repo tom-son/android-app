@@ -20,6 +20,11 @@ public class MainActivity extends AppCompatActivity {
     public void studentHandler(View v) {
         intent = new Intent(this, Student.class);
         startActivity(intent);
-
     }
+
+    public void todoTaskHandler(View v) {
+        intent = new Intent(this, TodoTask.class);
+        startActivity(intent);
+    }
+
 }
