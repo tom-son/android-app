@@ -1,6 +1,7 @@
 package com.example.student;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.ContactsContract;
@@ -26,7 +27,7 @@ import java.util.List;
 public class Student extends AppCompatActivity {
 
     EditText fname, lname, course, age, address;
-    Button studentToggle;
+    Button studentToggle, showLv;
     RadioGroup gender;
     SQLiteDatabase database;
     TableLayout addTable, editTable;
@@ -49,6 +50,7 @@ public class Student extends AppCompatActivity {
 
 
         studentToggle = (Button) findViewById(R.id.studentToggle);
+        showLv = (Button) findViewById(R.id.showLv);
 
         addTable = (TableLayout) findViewById(R.id.addStudentTable);
         studentList = (ListView) findViewById(R.id.studentList);
@@ -73,46 +75,53 @@ public class Student extends AppCompatActivity {
         radio = (RadioGroup) findViewById(R.id.genderGroupEdit);
 
 
+        showLv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showLayout("studentList");
+            }
+        });
 
-//        database = new DatabaseSQLiteHelper(this).getWritableDatabase();
-//
-//
-//        ContentValues values = new ContentValues();
-//
-//        values.put(Database.Exam.COL_NAME, "Mobile App Development" );
-//        values.put(Database.Exam.COL_LOCATION, "Kingswood");
-//        values.put(Database.Exam.COL_DATE_TIME, "02/02/2018 09:30:00" );
-//        values.put(Database.Exam.COL_STUDENT_ID, 1 );
-//
-//        long newRowId = database.insert(Database.Exam.TABLE_NAME, null, values);
-//
-//        Toast.makeText(this, "Student added! Student ID is: " + newRowId, Toast.LENGTH_LONG).show();
-
-//        database = new DatabaseSQLiteHelper(this).getWritableDatabase();
-//
-//        ContentValues value = new ContentValues();
-//
-//        value.put(Database.TodoTask.COL_NAME, "MAD Assignment 1");
-//        value.put(Database.TodoTask.COL_LOCATION, "Kingswood");
-//        value.put(Database.TodoTask.COL_STATUS, "INCOMPLETE");
-//
-//        long newRowId = database.insert(Database.TodoTask.TABLE_NAME, null, value);
-//
-//        Toast.makeText(this, "Student added! STudent ID is: " + newRowId, Toast.LENGTH_LONG).show();
-
-
-
-        SQLiteDatabase database = new DatabaseSQLiteHelper(this).getReadableDatabase();
-
-        Cursor cursor = database.rawQuery("SELECT * FROM " + Database.TodoTask.TABLE_NAME , null);
-
-        cursor.moveToPosition(0);
-
-        Log.i("The message is :  : : : ", cursor.getString(cursor.getColumnIndex("name")));
 
         setListView();
 
     }
+
+    public void redirectHome(View v) {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+
+    public void mapStudent(View v) {
+        database = new DatabaseSQLiteHelper(this).getReadableDatabase();
+
+        Log.i("studentId: ", studentIdTv.getText().toString()+":");
+        Cursor cursor = database.rawQuery("SELECT "+ Database.Student.COL_ADDRESS +" FROM " + Database.Student.TABLE_NAME + " WHERE " +
+                Database.Student._ID + "="+studentIdTv.getText().toString(), null);
+
+        cursor.moveToFirst();
+        String address = cursor.getString(cursor.getColumnIndex(Database.Student.COL_ADDRESS));
+        Log.i("Map location is:", cursor.getString(cursor.getColumnIndex(Database.Student.COL_ADDRESS)));
+        Intent intent = new Intent(this, MapsActivity.class);
+
+        intent.putExtra("location", address);
+
+        startActivity(intent);
+
+    }
+
+    public void deleteStudentHandler(View v) {
+        database = new DatabaseSQLiteHelper(this).getWritableDatabase();
+
+        String value = studentIdTv.getText().toString();
+
+        int numberDeleted = database.delete(Database.Student.TABLE_NAME, Database.Student._ID +"=?" ,new String[]{value});
+        Toast.makeText(this, Integer.toString(numberDeleted) + " Deleted", Toast.LENGTH_SHORT).show();
+
+        Student.this.recreate();
+    }
+
 
     private void showLayout(String layout) {
         studentList.setVisibility(View.GONE);
@@ -121,10 +130,10 @@ public class Student extends AppCompatActivity {
 
         switch(layout) {
             case "studentList":
-                startActivity(getIntent());
+                Student.this.recreate();
+//                startActivity(getIntent());
 //                studentList.setVisibility(View.VISIBLE);
 //                adapter.notifyDataSetChanged();
-
                 break;
             case "addTable":
                 addTable.setVisibility(View.VISIBLE);
@@ -151,9 +160,12 @@ public class Student extends AppCompatActivity {
 
         database = new DatabaseSQLiteHelper(this).getWritableDatabase();
 
-        int selectedId = gender.getCheckedRadioButtonId();
+        int selectedId = radio.getCheckedRadioButtonId();
         RadioButton selectedRadioButton = (RadioButton)findViewById(selectedId);
+
         ContentValues values = new ContentValues();
+
+        Log.i("The gender is :"+selectedRadioButton.getText().toString(), ":");
 
         values.put(Database.Student.COL_FIRST_NAME, fnameEt.getText().toString());
         values.put(Database.Student.COL_LAST_NAME, lnameEt.getText().toString());
@@ -168,8 +180,8 @@ public class Student extends AppCompatActivity {
         database.update(Database.Student.TABLE_NAME, values, Database.Student._ID +"="+ id, null);
         Toast.makeText(this, "Student with id: " + id +" updated!", Toast.LENGTH_SHORT).show();
 
-        showLayout("studentList");
-
+        Student.this.recreate();
+//        showLayout("studentList");
     }
 
 
@@ -203,6 +215,7 @@ public class Student extends AppCompatActivity {
         }
         ageEt.setText(Integer.toString(age));
         addressEt.setText(address);
+
 
     }
 
@@ -272,8 +285,7 @@ public class Student extends AppCompatActivity {
         Toast.makeText(this, "Student added! Student ID is: " + newRowId, Toast.LENGTH_LONG).show();
 
         setListView();
-        addTable.setVisibility(View.GONE);
-        studentList.setVisibility(View.VISIBLE);
 
+        Student.this.recreate();
     }
 }

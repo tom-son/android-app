@@ -16,6 +16,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
+    public void examHandler(View v) {
+        intent = new Intent(this, Exam.class);
+        startActivity(intent);
+    }
+
 
     public void studentHandler(View v) {
         intent = new Intent(this, Student.class);

@@ -4,9 +4,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TodoTask">
+    tools:context=".TodoTask"
+    android:background="@drawable/beachbackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="redirectHome"
+            android:text="Home" />
+
+        <Button
+            android:id="@+id/showAddTask"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="Add Task"
+            tools:layout_editor_absoluteY="0dp" />
+
+        <Button
+            android:text="show list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="cancel"/>
+    </LinearLayout>
+
+
 
     <TableLayout
+        android:id="@+id/addTable"
         android:layout_width="312dp"
         android:layout_height="398dp"
         android:layout_marginEnd="8dp"
@@ -83,6 +111,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Task ID" />
+
             <TextView
                 android:id="@+id/idTv"
                 android:layout_width="wrap_content"
@@ -165,16 +194,42 @@
             android:text="Update Task" />
     </TableLayout>
 
-    <ListView
+    <LinearLayout
         android:id="@+id/todoTaskLv"
-        android:layout_width="332dp"
-        android:layout_height="383dp"
+        android:layout_width="341dp"
+        android:layout_height="442dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="92dp"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.518"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.849">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Incomplete" />
+
+        <ListView
+            android:id="@+id/incompleteLv"
+            android:layout_width="match_parent"
+            android:layout_height="200dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Complete" />
+
+        <ListView
+            android:id="@+id/completeLv"
+            android:layout_width="match_parent"
+            android:layout_height="200dp" />
+    </LinearLayout>
 
 
 </android.support.constraint.ConstraintLayout>

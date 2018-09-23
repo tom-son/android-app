@@ -1,6 +1,7 @@
 package com.example.student;
 
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -12,13 +13,17 @@ import android.view.View;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -30,9 +35,15 @@ public class TodoTask extends AppCompatActivity {
     EditText name, location;
     EditText nameEt, locationEt;
     RadioGroup statusGroup;
-    ListView todoTaskLv;
-    TableLayout editTable;
+
+    LinearLayout todoTaskLv;
+    ListView incompleteLv, completeLv;
+    TableLayout addTable, editTable;
     TextView idTv;
+
+    Button showAddTask;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,19 +57,73 @@ public class TodoTask extends AppCompatActivity {
         nameEt = (EditText) findViewById(R.id.nameEt);
         locationEt = (EditText) findViewById(R.id.locationEt);
         statusGroup = (RadioGroup) findViewById(R.id.statusRadio);
-        todoTaskLv = (ListView) findViewById(R.id.todoTaskLv);
 
 
+        todoTaskLv = (LinearLayout) findViewById(R.id.todoTaskLv);
+        incompleteLv = (ListView) findViewById(R.id.incompleteLv);
+        completeLv = (ListView) findViewById(R.id.completeLv);
+
+        addTable = (TableLayout) findViewById(R.id.addTable);
         editTable = (TableLayout) findViewById(R.id.todoEditTable);
 
+        showAddTask = (Button) findViewById(R.id.showAddTask);
 
-        setListView();
+        showAddTask.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showLayout("addTable");
+            }
+        });
+
+        displayLv();
 
     }
 
-    private void setListView() {
+    public void cancel(View v) {
+        showLayout("todoListView");
+    }
+
+    public void redirectHome(View v) {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    private void displayLv() {
         db = new DatabaseSQLiteHelper(this).getReadableDatabase();
-        Cursor cursor = db.rawQuery("SELECT * FROM " + Database.TodoTask.TABLE_NAME, null);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + Database.TodoTask.TABLE_NAME + " WHERE " + Database.TodoTask.COL_STATUS + "= 'Incomplete'", null);
+
+        setListView(incompleteLv, cursor);
+        Log.i("cursor count for incomplete : : : ", Integer.toString(cursor.getCount() ));
+
+        cursor = db.rawQuery("SELECT * FROM " + Database.TodoTask.TABLE_NAME + " WHERE " + Database.TodoTask.COL_STATUS + "= 'Complete'", null);
+        Log.i("cursor count for complete : : : ", Integer.toString(cursor.getCount() ));
+        setListView(completeLv, cursor);
+    }
+
+    private void showLayout(String layout) {
+        addTable.setVisibility(View.GONE);
+        editTable.setVisibility(View.GONE);
+        todoTaskLv.setVisibility(View.GONE);
+        switch(layout) {
+            case "addTable":
+                addTable.setVisibility(View.VISIBLE);
+                break;
+            case "editTable":
+                editTable.setVisibility(View.VISIBLE);
+                break;
+            case "todoListView":
+                todoTaskLv.setVisibility(View.VISIBLE);
+                break;
+            default:
+                Log.i("     showlayout(string): string not found ", "");
+
+        }
+    }
+
+
+    private void setListView(ListView lv, Cursor cursor) {
+//        db = new DatabaseSQLiteHelper(this).getReadableDatabase();
+//        Cursor cursor = db.rawQuery("SELECT * FROM " + Database.TodoTask.TABLE_NAME, null);
 
         ArrayList taskData = new ArrayList();
 
@@ -68,7 +133,6 @@ public class TodoTask extends AppCompatActivity {
                 String name = cursor.getString(cursor.getColumnIndex(Database.TodoTask.COL_NAME));
                 String location = cursor.getString(cursor.getColumnIndex(Database.TodoTask.COL_LOCATION));
                 String status = cursor.getString(cursor.getColumnIndex(Database.TodoTask.COL_STATUS));
-                Log.i("theafndas 324 as @#$@ : : :", id + name + location);
 
 
                 String todoTaskRow = Integer.toString(id) + " " + name + " " + location + " " + status;
@@ -79,15 +143,39 @@ public class TodoTask extends AppCompatActivity {
         }
 
         ArrayAdapter adapter = new ArrayAdapter<String>(this, R.layout.activity_todo_task_list_view, R.id.textView,taskData);
-        todoTaskLv.setAdapter(adapter);
+        lv.setAdapter(adapter);
 
-        todoTaskLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.i("asdfsadf asdf asf asdf ", Integer.toString(position));
-                fillTodoTask(position);
+
+                TextView tv = view.findViewById(R.id.textView);
+
+                String value = tv.getText().toString();
+
+                value = value.substring(0, value.indexOf(' '));
+
+                Log.i("value id is:::"+value,": <--" );
+
+
+
+                fillTodoTask(Integer.parseInt(value)-1);
+                showLayout("editTable");
             }
         });
+
+
+
+//        todoTaskLv.setAdapter(adapter);
+//
+//        todoTaskLv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                Log.i("asdfsadf asdf asf asdf ", Integer.toString(position));
+//                fillTodoTask(position);
+//                showLayout("editTable");
+//            }
+//        });
     }
 
     public void fillTodoTask(int row) {
@@ -104,18 +192,13 @@ public class TodoTask extends AppCompatActivity {
         this.idTv.setText(Integer.toString(id));
         this.nameEt.setText(name);
         this.locationEt.setText(location);
-        Log.i("Asdfasdfa s234849831749123 : : ", status);
-        if (status.equals("INCOMPLETE")) {
+        if (status.equals("Incomplete")) {
             statusGroup.check(R.id.radioIncomplete);
         } else {
             statusGroup.check(R.id.radioComplete);
         }
 
-        editTable.setVisibility(View.VISIBLE);
-        todoTaskLv.setVisibility(View.GONE);
-
-
-
+        showLayout("todoListView");
     }
 
 
@@ -133,14 +216,19 @@ public class TodoTask extends AppCompatActivity {
 
         values.put(Database.TodoTask.COL_STATUS, status.getText().toString());
 
-        Log.i("The updated strings are!fsd %##@ : : ", values.toString() + status.getText().toString() + status.getText().toString() );
-
         String id = idTv.getText().toString();
 
 
         db.update(Database.TodoTask.TABLE_NAME, values, Database.TodoTask._ID + "=" + id, null);
 
         Toast.makeText(this, "Student with id: " + id +" updated!", Toast.LENGTH_SHORT).show();
+
+
+        TodoTask.this.recreate();
+
+//        showLayout("todoListView");
+
+
 
 
     }
@@ -153,12 +241,13 @@ public class TodoTask extends AppCompatActivity {
 
         values.put(Database.TodoTask.COL_NAME, name.getText().toString());
         values.put(Database.TodoTask.COL_LOCATION, location.getText().toString());
-        values.put(Database.TodoTask.COL_STATUS, "INCOMPLETE");
+        values.put(Database.TodoTask.COL_STATUS, "Incomplete");
 
         Long newRowId = db.insert(Database.TodoTask.TABLE_NAME,null, values);
         Toast.makeText(this, "Student added! Student ID is: " + newRowId, Toast.LENGTH_LONG).show();
 
-
+        TodoTask.this.recreate();
+//        showLayout("todoListView");
     }
 
 }

@@ -19,9 +19,9 @@
                                   <option name="values">
                                     <map>
                                       <entry key="backgroundLayerName" value="ic_launcher_background" />
-                                      <entry key="foregroundImage" value="$USER_HOME$/Desktop/icon/orange.png" />
-                                      <entry key="foregroundLayerName" value="orange_angry_bird" />
-                                      <entry key="outputName" value="orange angry bird" />
+                                      <entry key="foregroundImage" value="$USER_HOME$/Desktop/background.png" />
+                                      <entry key="foregroundLayerName" value="background-wallpaper" />
+                                      <entry key="outputName" value="background" />
                                     </map>
                                   </option>
                                 </PersistentState>
