@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -40,6 +41,7 @@ public class Student extends AppCompatActivity {
     TextView studentIdTv;
     ArrayAdapter adapter;
 
+    ImageView dp;
     int editPos;
 
 
@@ -74,7 +76,14 @@ public class Student extends AppCompatActivity {
         male = (RadioButton) findViewById(R.id.radioMaleEdit);
         radio = (RadioGroup) findViewById(R.id.genderGroupEdit);
 
+        dp = (ImageView) findViewById(R.id.dp);
 
+        studentToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showLayout("addTable");
+            }
+        });
         showLv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,12 +96,13 @@ public class Student extends AppCompatActivity {
 
     }
 
+    // go to home activity
     public void redirectHome(View v) {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 
-
+    // get student address and send user to map activity to show student address location
     public void mapStudent(View v) {
         database = new DatabaseSQLiteHelper(this).getReadableDatabase();
 
@@ -111,6 +121,8 @@ public class Student extends AppCompatActivity {
 
     }
 
+    // Delete student from student table
+    // Gets _ID from the TextView which was inserted by fillEdit()
     public void deleteStudentHandler(View v) {
         database = new DatabaseSQLiteHelper(this).getWritableDatabase();
 
@@ -123,6 +135,7 @@ public class Student extends AppCompatActivity {
     }
 
 
+    // display appropriate layout. e.g. edit student -> editTable
     private void showLayout(String layout) {
         studentList.setVisibility(View.GONE);
         addTable.setVisibility(View.GONE);
@@ -156,6 +169,7 @@ public class Student extends AppCompatActivity {
     }
 
 
+    // update student from student table gets the data from editTable layout
     public void updateStudent(View v) {
 
         database = new DatabaseSQLiteHelper(this).getWritableDatabase();
@@ -184,7 +198,9 @@ public class Student extends AppCompatActivity {
 //        showLayout("studentList");
     }
 
-
+    // Fill the editTable layout with student info from database.
+    // e.g. name EditText field will have student name to be updated
+    // NOTE: updateStudent() will getText() from these EditText
     private void fillEdit(int rowSelected) {
 
         SQLiteDatabase database = new DatabaseSQLiteHelper(this).getReadableDatabase();
@@ -193,6 +209,7 @@ public class Student extends AppCompatActivity {
 
 
         cursor.moveToPosition(rowSelected);
+        String dpSrc = cursor.getString(cursor.getColumnIndex(Database.Student.COL_DP));
         int studentId = cursor.getInt(cursor.getColumnIndex(Database.Student._ID));
         String fname = cursor.getString(cursor.getColumnIndex(Database.Student.COL_FIRST_NAME));
         String lname = cursor.getString(cursor.getColumnIndex(Database.Student.COL_LAST_NAME));
@@ -204,6 +221,9 @@ public class Student extends AppCompatActivity {
 
 //        String name = cursor.getString(cursor.getColumnIndex(Database.Student.COL_FIRST_NAME));
 
+        int id = this.getResources().getIdentifier("drawable/"+ dpSrc, null, this.getPackageName());
+
+        dp.setImageResource(id);
         studentIdTv.setText(Integer.toString(studentId));
         fnameEt.setText(fname.toString());
         lnameEt.setText(lname);
@@ -220,6 +240,8 @@ public class Student extends AppCompatActivity {
     }
 
 
+    // Gets all students from Student table and display it in a listview
+    // and sets onItemClick handler for each item listview
     private void setListView() {
 
         ArrayList students = new <String>ArrayList();
@@ -230,13 +252,13 @@ public class Student extends AppCompatActivity {
 
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
+                String dp = cursor.getString(cursor.getColumnIndex(Database.Student.COL_DP));
                 int id = cursor.getInt(cursor.getColumnIndex(Database.Student._ID));
                 String fname = cursor.getString(cursor.getColumnIndex(Database.Student.COL_FIRST_NAME));
                 String lname = cursor.getString((cursor.getColumnIndex(Database.Student.COL_LAST_NAME)));
 
-                String student = Integer.toString(id) +"        "+fname+"       "+lname;
+                String student = Integer.toString(id) +"        "+fname+"       "+lname ;
 
-                Log.i("first name is:  ", student);
                 students.add(student);
                 cursor.moveToNext();
             }
@@ -244,7 +266,6 @@ public class Student extends AppCompatActivity {
 
         studentList = (ListView) findViewById(R.id.studentList);
         adapter = new ArrayAdapter<String>(this, R.layout.activity_student_list_view, R.id.textView, students);
-
         studentList.setAdapter(adapter);
 
         studentList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -273,6 +294,7 @@ public class Student extends AppCompatActivity {
 
         ContentValues values = new ContentValues();
 
+        values.put(Database.Student.COL_DP, "orange");
         values.put(Database.Student.COL_FIRST_NAME, fname.getText().toString());
         values.put(Database.Student.COL_LAST_NAME, lname.getText().toString());
         values.put(Database.Student.COL_GENDER, selectedRadioButton.getText().toString());

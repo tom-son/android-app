@@ -16,17 +16,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
+    //  Go to exam activity
     public void examHandler(View v) {
         intent = new Intent(this, Exam.class);
         startActivity(intent);
     }
 
-
+    //  Go to exam student
     public void studentHandler(View v) {
         intent = new Intent(this, Student.class);
         startActivity(intent);
     }
-
+    //  Go to exam todoTask
     public void todoTaskHandler(View v) {
         intent = new Intent(this, TodoTask.class);
         startActivity(intent);

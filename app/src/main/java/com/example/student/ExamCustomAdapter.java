@@ -31,7 +31,7 @@ public class ExamCustomAdapter extends ArrayAdapter<ExamDataModel> {
         this.dataset = dataSet;
     }
 
-
+    // Return a view for list view item. With all the data inserted in the corresponding spots
     public View getView(int position, View convertView, ViewGroup parent) {
         ExamDataModel dataModel = getItem(position);
 

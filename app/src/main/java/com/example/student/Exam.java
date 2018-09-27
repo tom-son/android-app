@@ -42,7 +42,7 @@ public class Exam extends AppCompatActivity {
     private Button showAddExam, redirectHome;
     private Spinner studentSpinner, displayStudentSpinner;
     private Calendar myCalendar;
-
+    private ArrayList<ExamDataModel> currentExam, pastExam;
     private TableLayout addExamTable;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +86,7 @@ public class Exam extends AppCompatActivity {
         });
 
 
+        // Needed for calender picker
         myCalendar = Calendar.getInstance();
 
         final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
@@ -119,32 +120,35 @@ public class Exam extends AppCompatActivity {
 //        fillListView();
     }
 
+    // go to home activity
     private void redirectHome() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
 
     }
-
+    // set examDate EditText to the picker value
     private void updateLabel() {
-        String myFormat = "dd/MM/yyyy"; //In which you need put here
+        String myFormat = "dd/MM/yyyy";
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
 
         examDate.setText(sdf.format(myCalendar.getTime()));
     }
 
+    // Get exam associated with student _ID
+    // Sort the exam in current and past exams ArrayList by Date
+    // envoke fillListview() with the data
     public void displayExamList(View v) {
 
-
-        ArrayList<ExamDataModel> currentExam, pastExam;
         currentExam = new ArrayList<>();
         pastExam = new ArrayList<>();
 
         db = new DatabaseSQLiteHelper(this).getReadableDatabase();
         String selection = displayStudentSpinner.getSelectedItem().toString();
 
-        String rawQuery = "SELECT * FROM " + Database.Exam.TABLE_NAME + " ee INNER JOIN " + Database.Student.TABLE_NAME
+        String rawQuery = "SELECT ee._ID as exam_ID, * FROM " + Database.Exam.TABLE_NAME + " ee INNER JOIN " + Database.Student.TABLE_NAME
                 + " ss ON ee." + Database.Exam.COL_STUDENT_ID + " = ss." + Database.Student._ID
                 + " WHERE ss." + Database.Student._ID + " = " + selection  ;
+        Log.i("rawQuery: ", rawQuery);
         Cursor c = db.rawQuery(
                 rawQuery,
                 null
@@ -169,21 +173,26 @@ public class Exam extends AppCompatActivity {
                     int compareResult = d1.compareTo(d2);
 
 
-                    int id = c.getInt(c.getColumnIndex(Database.Exam._ID));
+                    int eid = c.getInt(c.getColumnIndex("exam_ID"));
                     String name = c.getString(c.getColumnIndex(Database.Exam.COL_NAME));
                     String location = c.getString(c.getColumnIndex(Database.Exam.COL_LOCATION));
                     String dateAndTime = c.getString(c.getColumnIndex(Database.Exam.COL_DATE_TIME));
+
+                    int sid = c.getInt(c.getColumnIndex(Database.Exam.COL_STUDENT_ID));
+
+                    Log.i("The cursor is: ","Sid: " + Integer.toString(sid)+ ", eid: " + Integer.toString(eid)+ ", name: " + name + ", location: "+ location+", dateAndTime: " + dateAndTime);
 
 
 
                     if (compareResult > 0) {
                         Log.i("a", "d2 is younger than1 d1" );
                         // Current exam
-                        currentExam.add(new ExamDataModel(id, name, location, dateAndTime));
+                        Log.i(Integer.toString(eid), " <- id " + name + " " + location + " " + dateAndTime);
+                        currentExam.add(new ExamDataModel(eid, name, location, dateAndTime));
                     } else if (compareResult < 0) {
                         // Past exam
                         Log.i("b", "d1 is younger than d2" + d2);
-                        pastExam.add(new ExamDataModel(id, name, location, dateAndTime));
+                        pastExam.add(new ExamDataModel(eid, name, location, dateAndTime));
                     } else {
                         // Current Exam
                         Log.i("c", "d1 is equals d2 ");
@@ -205,7 +214,7 @@ public class Exam extends AppCompatActivity {
         showLayout("examListView");
     }
 
-
+    // Populate a provided Spinner with _ID from Student table
     private void setStudentSpinner(Spinner spinner) {
         db = new DatabaseSQLiteHelper(this).getReadableDatabase();
 
@@ -228,6 +237,7 @@ public class Exam extends AppCompatActivity {
         spinner.setAdapter(adapter);
     }
 
+    // Display the appropriate layout
     private void showLayout(String layout) {
         ExamLv.setVisibility(View.GONE);
         addExamTable.setVisibility(View.GONE);
@@ -241,7 +251,7 @@ public class Exam extends AppCompatActivity {
                 break;
         }
     }
-
+    // Resets the fields to empty strings
     private void clearForm() {
         name.setText("");
         location.setText("");
@@ -250,7 +260,6 @@ public class Exam extends AppCompatActivity {
     }
 
     public void addExam(View v) {
-        Log.i("asdf on clicked clicked: : ", " ");
         db = new DatabaseSQLiteHelper(this).getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
@@ -272,6 +281,14 @@ public class Exam extends AppCompatActivity {
 //        db.close();
         Toast.makeText(this, "Created rowId: " +rowId, Toast.LENGTH_SHORT).show();
 
+
+        db = new DatabaseSQLiteHelper(this).getReadableDatabase();
+        Cursor c = db.rawQuery("SELECT * FROM " + Database.Exam.TABLE_NAME, null );
+        c.moveToLast();
+
+        Log.i("The added id is ", Integer.toString(c.getInt(c.getColumnIndex(Database.Exam._ID))));
+
+
         clearForm();
         showLayout("examListView");
 //        Exam.this.recreate();
@@ -279,26 +296,10 @@ public class Exam extends AppCompatActivity {
 
 
 
-
-
-    public void fillListView(ListView lv, ArrayList<ExamDataModel> dataModel) {
+    // Populate ListView with ArrayList<ExamDataModel> dataModel
+    // as well as setOnItemClick handler to toggle checkout in the ListView
+    public void fillListView(ListView lv, final ArrayList<ExamDataModel> dataModel) {
         db = new DatabaseSQLiteHelper(this).getReadableDatabase();
-
-//        dataModel.clear();
-//        Cursor cursor = db.rawQuery("SELECT * FROM " + Database.Exam.TABLE_NAME, null);
-
-//        if(cursor.moveToFirst()) {
-//            while(!cursor.isAfterLast()) {
-//                int id = cursor.getInt(cursor.getColumnIndex(Database.Exam._ID));
-//                String name = cursor.getString(cursor.getColumnIndex(Database.Exam.COL_NAME));
-//                String location = cursor.getString(cursor.getColumnIndex(Database.Exam.COL_LOCATION));
-//                String dateAndTime = cursor.getString(cursor.getColumnIndex(Database.Exam.COL_DATE_TIME));
-//
-
-//            dataModel.add(new ExamDataModel(id, name, location, dateAndTime));
-//                cursor.moveToNext();
-//            }
-//        }
 
         adapter = new ExamCustomAdapter(getApplicationContext(), dataModel);
 
@@ -308,11 +309,42 @@ public class Exam extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.i("From on click item : : ", Integer.toString(position));
+
+                ExamDataModel data =  (ExamDataModel) dataModel.get(position);
+                data.setChecked(!data.getChecked());
+                adapter.notifyDataSetChanged();
+                Toast.makeText(Exam.this, data.getId()+"<-id: "+data.getName() + "<-name: checked -> " +Boolean.toString(data.getChecked()) , Toast.LENGTH_SHORT).show();
+
             }
         });
 
     }
 
+    // Searches currentExam and pastExam ArrayList which values was inserted in displayExamListview
+    public void deleteExams(View v) {
+
+        db = new DatabaseSQLiteHelper(this).getWritableDatabase();
+
+
+
+        for(int i = 0; i < currentExam.size(); i++) {
+            Log.i(Integer.toString(currentExam.get(i).getId()) + " " + currentExam.get(i).getName()," " + Boolean.toString(currentExam.get(i).getChecked()));
+            if(currentExam.get(i).getChecked() == true){
+                Boolean del = db.delete(Database.Exam.TABLE_NAME,Database.Exam._ID+"=?", new String[] {Integer.toString(currentExam.get(i).getId())}) > 0;
+
+                Log.i("did it delete?: ", Boolean.toString(del));
+            }
+        }
+
+        for(int i = 0; i < pastExam.size(); i++) {
+            Log.i(Integer.toString(pastExam.get(i).getId()) + " " + pastExam.get(i).getName()," " + Boolean.toString(pastExam.get(i).getChecked()));
+            if(pastExam.get(i).getChecked() == true){
+                Boolean del = db.delete(Database.Exam.TABLE_NAME,Database.Exam._ID+"=?", new String[] {Integer.toString(pastExam.get(i).getId())}) > 0;
+
+                Log.i("did it delete?: ", Boolean.toString(del));
+            }
+        }
+    }
 
 
 }

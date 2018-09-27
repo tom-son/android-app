@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="colorTextButton">#fff</color>
+    <color name="dangerButton">#D9534E</color>
+    <color name="homeButton">#333333</color>
+    <color name="buttonPrimary">#7EC400</color>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>

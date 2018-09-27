@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseSQLiteHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
     public static final String DATABASE_NAME = "assignment1Database";
 
     public DatabaseSQLiteHelper(Context context) {
@@ -27,7 +27,7 @@ public class DatabaseSQLiteHelper extends SQLiteOpenHelper {
 //        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + Database.TodoTask.TABLE_NAME);
 //        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + Database.Exam.TABLE_NAME);
 
-        if(i == 0 && i1 == 4) {
+        if(i == 0 && i1 == 5) {
             sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + Database.TodoTask.TABLE_NAME);
             sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + Database.Exam.TABLE_NAME);
         }

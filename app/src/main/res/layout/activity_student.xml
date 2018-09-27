@@ -16,55 +16,57 @@
 
     <Button
         android:id="@+id/button2"
-        android:text="home"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="redirectHome" />
+        android:backgroundTint="@color/homeButton"
+        android:textColor="#fff"
+        android:onClick="redirectHome"
+        android:text="home" />
 
     <Button
         android:id="@+id/studentToggle"
-        android:layout_width="wrap_content"
+        android:layout_width="118dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:onClick="studentToogle"
+        android:layout_marginEnd="8dp"
+        android:backgroundTint="@color/colorAccent"
         android:text="Add Student"
-        app:layout_constraintStart_toEndOf="@+id/button2"
+        android:textColor="#fff"
+        app:layout_constraintEnd_toStartOf="@+id/showLv"
         tools:layout_editor_absoluteY="0dp" />
 
     <Button
         android:id="@+id/showLv"
-        android:layout_width="wrap_content"
+        android:layout_width="131dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:backgroundTint="@color/colorAccent"
         android:text="Show Student"
-        app:layout_constraintStart_toEndOf="@+id/studentToggle"
+        android:textColor="#fff"
+        app:layout_constraintEnd_toEndOf="parent"
         tools:layout_editor_absoluteY="0dp" />
 
     <!--</LinearLayout>-->
-
-
-
-
-
 
 
     <TableLayout
         android:visibility="gone"
         android:id="@+id/editStudentTable"
         android:layout_width="368dp"
-        android:layout_height="450dp"
+        android:layout_height="535dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="48dp"
+        android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.481"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/studentToggle">
 
-        <Button
-            android:text="Map To Student Address"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="mapStudent"/>
+
+
+        <ImageView
+            android:id="@+id/dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp" />
 
         <TableRow
             android:layout_width="wrap_content"
@@ -200,16 +202,28 @@
         </TableRow>
 
         <Button
-            android:text="Update Student"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="updateStudent"/>
+            android:backgroundTint="@color/buttonPrimary"
+            android:textColor="@color/colorTextButton"
+            android:onClick="mapStudent"
+            android:text="Map To Student Address" />
 
         <Button
-            android:text="Delete Student"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="deleteStudentHandler"/>
+            android:backgroundTint="@color/buttonPrimary"
+            android:onClick="updateStudent"
+            android:text="Update Student"
+            android:textColor="@color/colorTextButton" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/dangerButton"
+            android:onClick="deleteStudentHandler"
+            android:text="Delete Student"
+            android:textColor="@color/colorTextButton" />
     </TableLayout>
 
 
@@ -357,6 +371,7 @@
 
 
     <ListView
+
         android:id="@+id/studentList"
         android:layout_width="368dp"
         android:layout_height="447dp"

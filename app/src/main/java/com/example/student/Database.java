@@ -8,19 +8,22 @@ public class Database {
     private Database() {
     }
 
-    public static class Student implements BaseColumns{
+    public static class Student implements BaseColumns {
 
         public static final String TABLE_NAME = "student";
-        public static final String COL_FIRST_NAME= "firstName";
+        public static final String COL_FIRST_NAME = "firstName";
         public static final String COL_LAST_NAME = "lastName";
         public static final String COL_GENDER = "gender";
-        public static final String COL_COURSE= "course";
+        public static final String COL_COURSE = "course";
         public static final String COL_AGE = "age";
         public static final String COL_ADDRESS = "address";
+        public static final String COL_DP = "dp";
+
 
         public static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " +
                 TABLE_NAME + " (" +
                 _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COL_DP + " TEXT, " +
                 COL_FIRST_NAME + " TEXT, " +
                 COL_LAST_NAME + " TEXT, " +
                 COL_GENDER + " TEXT, " +
@@ -36,11 +39,11 @@ public class Database {
         public static final String COL_STATUS = "status";
 
         public static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " +
-            TABLE_NAME + " (" +
-            _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            COL_NAME + " TEXT, " +
-            COL_LOCATION + " TEXT, " +
-            COL_STATUS + " TEXT)";
+                TABLE_NAME + " (" +
+                _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COL_NAME + " TEXT, " +
+                COL_LOCATION + " TEXT, " +
+                COL_STATUS + " TEXT)";
     }
 
     public static class Exam implements BaseColumns {
@@ -57,7 +60,7 @@ public class Database {
                 COL_NAME + " TEXT, " +
                 COL_DATE_TIME + " TEXT, " +
                 COL_LOCATION + " TEXT, " +
-                 "FOREIGN KEY(" + COL_STUDENT_ID + ") REFERENCES " +
+                "FOREIGN KEY(" + COL_STUDENT_ID + ") REFERENCES " +
                 Student.TABLE_NAME + "(" + Student._ID + ")" + " )";
     }
 
